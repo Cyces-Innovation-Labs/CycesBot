@@ -18,6 +18,9 @@ entryPoints:
   flower:
     address: ':5555'
 
+  jenkins:
+    address: ':8080'
+
 certificatesResolvers:
   letsencrypt:
     # https://doc.traefik.io/traefik/https/acme/#lets-encrypt
@@ -50,6 +53,14 @@ http:
         # https://doc.traefik.io/traefik/master/routing/routers/#certresolver
         certResolver: letsencrypt
 
+    jenkins-secure-router:
+      rule: 'Host(`jenkins.cyces.co`)'
+      entryPoints:
+        - jenkins
+      service: jenkins
+      tls:
+        certResolver: letsencrypt
+
   middlewares:
     csrf:
       # https://doc.traefik.io/traefik/master/middlewares/http/headers/#hostsproxyheaders
@@ -67,6 +78,11 @@ http:
       loadBalancer:
         servers:
           - url: http://flower:5555
+
+    jenkins:
+      loadBalancer:
+        servers:
+          - url: http://jenkins:8080
 
 providers:
   # https://doc.traefik.io/traefik/master/providers/file/
